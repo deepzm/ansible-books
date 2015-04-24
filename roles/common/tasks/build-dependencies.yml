@@ -1,0 +1,28 @@
+---
+# install build dependencies
+
+- name: Install Build Dependencies
+  apt: pkg={{item}} state=present update_cache=yes
+  with_items:
+    - wget
+    - curl
+    - git-core 
+    - make
+    - g++
+    - gcc
+    - libcurl4-openssl-dev
+    - libsasl2-2
+    - libsasl2-dev
+    - libcurl3
+    - zlib1g-dev
+    - build-essential
+    - libssl-dev
+    - libreadline-dev
+    - libyaml-dev
+    - libsqlite3-dev
+    - sqlite3
+    - libxml2-dev
+    - libxslt1-dev
+    - libcurl4-openssl-dev
+    - python-software-properties
+    - libffi-dev

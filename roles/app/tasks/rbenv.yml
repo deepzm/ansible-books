@@ -1,0 +1,61 @@
+---
+
+- name: Install packages for building ruby
+  apt: pkg={{ item }} state=installed
+  with_items:
+    - git-core 
+    - curl
+    - zlib1g-dev
+    - build-essential
+    - libssl-dev
+    - libreadline-dev
+    - libyaml-dev
+    - libsqlite3-dev
+    - sqlite3
+    - libxml2-dev
+    - libxslt1-dev
+    - libcurl4-openssl-dev
+    - python-software-properties
+    - libffi-dev
+
+- name: Get rbenv
+  git: repo=https://github.com/sstephenson/rbenv.git dest={{ rbenv_root }}
+
+- name: Get rbenv ruby installer
+  git: repo=https://github.com/sstephenson/ruby-build.git dest={{ rbenv_root }}/plugins/ruby-build
+
+- name: Make {{ deployment_user }} owner of ruby build
+  file: path={{ rbenv_root }} state=directory owner={{ deployment_user }} group={{ deployment_user }} recurse=yes
+
+- name: Setup rbenv initialization to profile
+  template: src=rbenv.sh.j2 dest=/etc/profile.d/rbenv.sh owner=root group=root mode=0755
+
+- name: check ruby {{ ruby_version }} installed
+  sudo_user: "{{ deployment_user }}"
+  command: bash -lc "rbenv versions | grep {{ ruby_version }}"
+  register: ruby_installed
+  ignore_errors: yes
+
+- name: install ruby {{ ruby_version }}
+  sudo_user: "{{ deployment_user }}"
+  command: bash -lc "rbenv install {{ ruby_version }}"
+  when: ruby_installed|failed
+
+- name: set global ruby {{ ruby_version }}
+  sudo_user: "{{ deployment_user }}"
+  command: bash -lc "rbenv global {{ ruby_version }}"
+  when: ruby_installed|failed
+
+- name: rehash
+  sudo_user: "{{ deployment_user }}"
+  command: bash -lc "rbenv rehash"
+  when: ruby_installed|failed
+
+- name: install bundler
+  sudo_user: "{{ deployment_user }}"
+  command: bash -lc "gem install bundler"
+
+- name: rehash after installing
+  sudo_user: "{{ deployment_user }}"
+  command: bash -lc "rbenv rehash"
+  when: ruby_installed|failed

@@ -1,0 +1,10 @@
+---
+
+- name: Start Nginx
+  service: name=nginx state=started
+
+- name: Create nginx config backup directory
+  file: path=/etc/nginx/config-backup state=directory
+
+- name: Backup and Remove nginx default config
+  command: mv /etc/nginx/sites-enabled/default /etc/nginx/config-backup/default

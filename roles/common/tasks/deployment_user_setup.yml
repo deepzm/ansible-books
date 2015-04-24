@@ -1,0 +1,11 @@
+---
+# create and setup deployment user
+
+- name: Create deployment user
+  user: name="{{ deployment_user }}" comment="The Deployer" shell=/bin/bash password="{{deployment_user_password}}"
+
+- name: Setup keys for deployer
+  authorized_key: user="{{ deployment_user }}" key="{{ lookup('file', deployer_key_location) }}"
+
+- name: Setup deployment user to be a sudoer
+  lineinfile: dest=/etc/sudoers state=present regexp='^%{{ deployment_user }} ALL\=' line='%{{ deployment_user }} ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'

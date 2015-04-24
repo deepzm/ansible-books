@@ -1,0 +1,22 @@
+---
+
+- name: Setup prerequisites
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - common
+
+- name: Setup app server
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - app
+
+- name: Setup db server
+  hosts: all
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - db

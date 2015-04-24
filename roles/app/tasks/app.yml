@@ -1,0 +1,10 @@
+---
+
+- name: Install Git
+  apt: pkg=git state=installed update_cache=true
+
+- name: Create school manager user
+  user: name="{{ application_runner }}" comment="Runs the x-school app" shell=/bin/bash
+
+- name: Deployment directory
+  file: path=/var/www state=directory owner="{{ deployment_user }}" group="{{ deployment_user }}"
